@@ -24,7 +24,17 @@
     <section class="card">
       <h2>1) Pegar datos</h2>
       <p class="hint">Acepta TSV copiado desde Excel o CSV. La primera fila debe contener encabezados.</p>
-      <textarea id="paste" placeholder="Pegá acá tu tabla..."></textarea>
+      <textarea id="paste" placeholder="Pegá acá tu tabla desde Excel o CSV..."></textarea>
+      <div id="pasteTablePanel" class="pasteTablePanel is-hidden">
+        <div class="pasteTableHead">
+          <div>
+            <strong>Datos detectados</strong>
+            <span id="pasteSummary">Sin datos cargados.</span>
+          </div>
+          <button id="btnToggleRaw" class="ghost small" type="button">Ocultar texto pegado</button>
+        </div>
+        <div class="tableWrap compact"><table id="pastePreview"></table></div>
+      </div>
       <div class="row">
         <button id="btnParse" type="button">Cargar / Previsualizar</button>
         <button id="btnClear" class="ghost" type="button">Limpiar</button>
@@ -111,5 +121,107 @@
     </section>
   </div>
   <script src="app.js"></script>
+  <script>
+    (function(){
+      const raw = document.getElementById("paste");
+      const panel = document.getElementById("pasteTablePanel");
+      const table = document.getElementById("pastePreview");
+      const summary = document.getElementById("pasteSummary");
+      const btnToggleRaw = document.getElementById("btnToggleRaw");
+      const btnParse = document.getElementById("btnParse");
+      const btnClear = document.getElementById("btnClear");
+
+      function splitLine(line, delim){
+        if (delim !== "," && delim !== ";") return line.split(delim);
+        const out = [];
+        let cur = "";
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++){
+          const ch = line[i];
+          if (ch === '"'){
+            if (inQuotes && line[i + 1] === '"'){ cur += '"'; i++; }
+            else inQuotes = !inQuotes;
+          } else if (ch === delim && !inQuotes){
+            out.push(cur);
+            cur = "";
+          } else {
+            cur += ch;
+          }
+        }
+        out.push(cur);
+        return out;
+      }
+
+      function parseVisualTable(text){
+        const clean = String(text || "").trim();
+        if (!clean) return { cols: [], rows: [] };
+        const lines = clean.split(/\r?\n/).filter(line => line.trim().length > 0);
+        if (!lines.length) return { cols: [], rows: [] };
+        const firstLine = lines[0];
+        let delim = "\t";
+        if (!firstLine.includes("\t")){
+          delim = firstLine.includes(";") ? ";" : firstLine.includes(",") ? "," : "\t";
+        }
+        const cols = splitLine(lines[0], delim).map(h => h.trim());
+        const rows = lines.slice(1).map(line => {
+          const parts = splitLine(line, delim);
+          const row = {};
+          cols.forEach((col, idx) => row[col] = (parts[idx] ?? "").trim());
+          return row;
+        });
+        return { cols, rows };
+      }
+
+      function renderVisualTable(){
+        const { cols, rows } = parseVisualTable(raw.value);
+        table.innerHTML = "";
+        if (!cols.length || !rows.length){
+          panel.classList.add("is-hidden");
+          summary.textContent = "Sin datos cargados.";
+          return;
+        }
+
+        const thead = document.createElement("thead");
+        const trh = document.createElement("tr");
+        cols.forEach(col => {
+          const th = document.createElement("th");
+          th.textContent = col;
+          trh.appendChild(th);
+        });
+        thead.appendChild(trh);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        rows.slice(0, 20).forEach(row => {
+          const tr = document.createElement("tr");
+          cols.forEach(col => {
+            const td = document.createElement("td");
+            td.textContent = row[col] ?? "";
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+
+        panel.classList.remove("is-hidden");
+        summary.textContent = `${rows.length} filas × ${cols.length} columnas. Vista previa de las primeras ${Math.min(rows.length, 20)} filas.`;
+      }
+
+      raw.addEventListener("paste", () => setTimeout(renderVisualTable, 0));
+      raw.addEventListener("input", renderVisualTable);
+      btnParse.addEventListener("click", () => setTimeout(renderVisualTable, 0));
+      btnClear.addEventListener("click", () => {
+        table.innerHTML = "";
+        panel.classList.add("is-hidden");
+        summary.textContent = "Sin datos cargados.";
+        raw.classList.remove("collapsedRaw");
+        btnToggleRaw.textContent = "Ocultar texto pegado";
+      });
+      btnToggleRaw.addEventListener("click", () => {
+        raw.classList.toggle("collapsedRaw");
+        btnToggleRaw.textContent = raw.classList.contains("collapsedRaw") ? "Mostrar texto pegado" : "Ocultar texto pegado";
+      });
+    })();
+  </script>
 </body>
 </html>
