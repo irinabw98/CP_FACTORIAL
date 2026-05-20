@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CP_FACTORIAL · ANOVA factorial + Tukey</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <div class="badge">CP</div>
+        <div>
+          <h1>ANOVA factorial + Tukey</h1>
+          <p class="subtitle">Pegá tu tabla, elegí variable respuesta, factores y modo de localidades, y descargá un Excel con el análisis factorial.</p>
+        </div>
+      </div>
+      <div class="hero">
+        <p>Esta versión está pensada para modelos factoriales flexibles. Podés seleccionar una cantidad variable de factores, analizar localidades juntas, separadas o ambas, y obtener ANOVA, medias factoriales y comparaciones Tukey.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1) Pegar datos</h2>
+      <p class="hint">Acepta TSV copiado desde Excel o CSV. La primera fila debe contener encabezados.</p>
+      <textarea id="paste" placeholder="Pegá acá tu tabla..."></textarea>
+      <div class="row">
+        <button id="btnParse" type="button">Cargar / Previsualizar</button>
+        <button id="btnClear" class="ghost" type="button">Limpiar</button>
+        <span id="status" class="status"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Configurar análisis factorial</h2>
+      <div class="grid grid-3">
+        <div>
+          <label for="valueCol">Variable respuesta</label>
+          <select id="valueCol"></select>
+          <p class="mini">Ej: <code>rendimiento</code>, <code>fitotoxicidad</code>, <code>assessment_value</code></p>
+        </div>
+        <div>
+          <label for="locationCol">Columna localidad / ambiente</label>
+          <select id="locationCol"></select>
+          <p class="mini">Ej: <code>trial_mod</code>. También podés elegir “Sin localidad”.</p>
+        </div>
+        <div>
+          <label for="alpha">Alpha</label>
+          <input id="alpha" type="number" step="0.001" min="0.001" max="0.2" value="0.05" />
+          <p class="mini">Por defecto: 0.05</p>
+        </div>
+      </div>
+
+      <div class="modeBox">
+        <label>Modo de localidades</label>
+        <div class="radioGrid">
+          <label class="radioCard"><input type="radio" name="locationMode" value="separate" checked><span>Separadas</span><small>Corre un factorial por cada localidad.</small></label>
+          <label class="radioCard"><input type="radio" name="locationMode" value="combined"><span>Juntas</span><small>Incluye localidad como factor del modelo.</small></label>
+          <label class="radioCard"><input type="radio" name="locationMode" value="both"><span>Ambas</span><small>Genera análisis separado y combinado.</small></label>
+        </div>
+      </div>
+
+      <div class="grouping">
+        <label>Factores del modelo</label>
+        <p class="hint">Seleccioná dos o más factores. Para tu caso actual: <code>hibrido</code> y <code>dosis</code>. En futuros análisis podés seleccionar más factores.</p>
+        <div id="factorCols" class="chips"></div>
+      </div>
+
+      <div class="factorOrder">
+        <div>
+          <label for="primaryFactor">Factor principal</label>
+          <select id="primaryFactor"></select>
+          <p class="mini">Sirve para ordenar resultados y priorizar interpretación.</p>
+        </div>
+        <div>
+          <label for="secondaryFactor">Factor secundario</label>
+          <select id="secondaryFactor"></select>
+          <p class="mini">Ej: dosis.</p>
+        </div>
+      </div>
+
+      <div class="grouping">
+        <label>Columnas para agrupar análisis independientes</label>
+        <p class="hint">Opcional. Usalo para partir por ensayo, momento, variable evaluada u otra segmentación. No selecciones acá las columnas que ya son factores.</p>
+        <div id="groupCols" class="chips"></div>
+      </div>
+
+      <div class="optionRow">
+        <label class="check"><input id="includeMainTukey" type="checkbox" checked> Tukey por efectos principales</label>
+        <label class="check"><input id="includeInteractionTukey" type="checkbox" checked> Tukey por combinación factorial</label>
+      </div>
+
+      <div class="row">
+        <button id="btnAnalyze" class="primary" type="button" disabled>Ejecutar y descargar Excel</button>
+        <span class="pill">GitHub Pages + Render</span>
+      </div>
+
+      <div id="progressWrap" class="progressWrap">
+        <div class="progress"><div id="progressBar"></div></div>
+        <div id="progressText" class="progressText"></div>
+      </div>
+
+      <p class="hint">El Excel incluye la tabla original enriquecida, ANOVA factorial, medias por combinación, Tukey por factor, Tukey por interacción, interpretación y advertencias.</p>
+    </section>
+
+    <section class="card">
+      <h2>3) Vista previa</h2>
+      <p class="hint">Verificá que la tabla se haya pegado correctamente.</p>
+      <div class="tableWrap"><table id="preview"></table></div>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
