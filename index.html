@@ -9,21 +9,99 @@
 <body>
   <div class="app">
     <header class="top">
-      <div class="brand">
-        <div class="badge">CP</div>
-        <div>
-          <h1>ANOVA factorial + Tukey</h1>
-          <p class="subtitle">Pegá tu tabla, elegí variable respuesta, factores y modo de localidades, y descargá un Excel con el análisis factorial.</p>
+      <div class="heroPanel">
+        <div class="heroGlow"></div>
+        <div class="brand">
+          <div class="badge">CP</div>
+          <div>
+            <div class="eyebrow">CP_FACTORIAL · análisis experimental</div>
+            <h1>ANOVA factorial + Tukey</h1>
+            <p class="subtitle">Pegá tu tabla, elegí variable respuesta, factores y modo de localidades, y descargá un Excel con el análisis factorial listo para interpretar.</p>
+          </div>
+        </div>
+        <div class="heroGrid">
+          <div class="heroText">
+            <h2>Analizá efectos principales e interacciones sin armar fórmulas manuales.</h2>
+            <p>La app detecta las columnas de tu hoja, te deja seleccionar factores variables y corre modelos factoriales para comparar combinaciones como <b>híbrido × dosis</b>, <b>producto × momento</b> o <b>variedad × ambiente</b>.</p>
+            <div class="heroActions">
+              <a href="#pegar-datos" class="cta">Empezar análisis</a>
+              <a href="#guia-factorial" class="cta secondary">Ver guía rápida</a>
+            </div>
+          </div>
+          <div class="statCard">
+            <span class="statLabel">Modelo ejemplo</span>
+            <code>respuesta ~ híbrido × dosis × localidad</code>
+            <p>Podés analizar localidades separadas, juntas como factor ambiental, o ambas formas.</p>
+          </div>
         </div>
       </div>
-      <div class="hero">
-        <p>Esta versión está pensada para modelos factoriales flexibles. Podés seleccionar una cantidad variable de factores, analizar localidades juntas, separadas o ambas, y obtener ANOVA, medias factoriales y comparaciones Tukey.</p>
+
+      <div class="featureGrid">
+        <div class="featureCard"><span>01</span><strong>Factores variables</strong><p>Seleccioná dos o más factores según el ensayo.</p></div>
+        <div class="featureCard"><span>02</span><strong>Localidades flexibles</strong><p>Separadas, juntas o ambas en un mismo Excel.</p></div>
+        <div class="featureCard"><span>03</span><strong>Tukey factorial</strong><p>Comparaciones por factor y por combinación.</p></div>
       </div>
     </header>
 
-    <section class="card">
-      <h2>1) Pegar datos</h2>
-      <p class="hint">Acepta TSV copiado desde Excel o CSV. La primera fila debe contener encabezados.</p>
+    <section id="guia-factorial" class="card guideCard">
+      <h2>Guía rápida: ¿qué es un análisis factorial?</h2>
+      <p class="hint bigHint">Un análisis factorial sirve para evaluar dos o más factores al mismo tiempo y detectar si el efecto de un factor cambia según el nivel de otro.</p>
+
+      <details open>
+        <summary>¿Qué responde?</summary>
+        <div class="detailsBody">
+          <p>Responde tres preguntas principales:</p>
+          <div class="guideGrid">
+            <div><strong>Efecto del factor principal</strong><span>Ej: ¿los híbridos difieren en rendimiento?</span></div>
+            <div><strong>Efecto del factor secundario</strong><span>Ej: ¿la dosis modifica el rendimiento?</span></div>
+            <div><strong>Interacción</strong><span>Ej: ¿la respuesta a dosis depende del híbrido?</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Cuándo conviene usarlo?</summary>
+        <div class="detailsBody">
+          <p>Conviene cuando el ensayo tiene combinaciones entre factores. Por ejemplo: híbrido × dosis, producto × momento, fertilización × ambiente, fungicida × localidad o genotipo × temperatura.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Cómo usar esta app?</summary>
+        <div class="detailsBody steps">
+          <p><b>1.</b> Pegá tu tabla desde Excel.</p>
+          <p><b>2.</b> Elegí la variable respuesta: rendimiento, fitotoxicidad, severidad, etc.</p>
+          <p><b>3.</b> Seleccioná los factores del modelo.</p>
+          <p><b>4.</b> Definí factor principal y secundario para ordenar la interpretación.</p>
+          <p><b>5.</b> Elegí si las localidades se analizan separadas, juntas o ambas.</p>
+          <p><b>6.</b> Ejecutá y descargá el Excel.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Ejemplo para tu caso: híbrido × dosis</summary>
+        <div class="detailsBody">
+          <p>Para evaluar 10 híbridos con testigo, dosis X y dosis 2X, seleccionarías:</p>
+          <div class="exampleBox">
+            <span><b>Variable respuesta:</b> rendimiento o fitotoxicidad</span>
+            <span><b>Factores:</b> híbrido y dosis</span>
+            <span><b>Factor principal:</b> híbrido</span>
+            <span><b>Factor secundario:</b> dosis</span>
+            <span><b>Localidad:</b> trial_mod</span>
+          </div>
+          <p>Si la interacción <b>híbrido × dosis</b> es significativa, significa que la respuesta a la dosis no fue igual para todos los híbridos.</p>
+        </div>
+      </details>
+    </section>
+
+    <section id="pegar-datos" class="card stepCard">
+      <div class="sectionTitle">
+        <span class="stepBadge">1</span>
+        <div>
+          <h2>Pegar datos</h2>
+          <p class="hint">Acepta TSV copiado desde Excel o CSV. La primera fila debe contener encabezados.</p>
+        </div>
+      </div>
       <textarea id="paste" placeholder="Pegá acá tu tabla desde Excel o CSV..."></textarea>
       <div id="pasteTablePanel" class="pasteTablePanel is-hidden">
         <div class="pasteTableHead">
@@ -42,8 +120,14 @@
       </div>
     </section>
 
-    <section class="card">
-      <h2>2) Configurar análisis factorial</h2>
+    <section class="card stepCard">
+      <div class="sectionTitle">
+        <span class="stepBadge">2</span>
+        <div>
+          <h2>Configurar análisis factorial</h2>
+          <p class="hint">Seleccioná variable respuesta, factores, localidad y tipo de comparación.</p>
+        </div>
+      </div>
       <div class="grid grid-3">
         <div>
           <label for="valueCol">Variable respuesta</label>
@@ -101,8 +185,8 @@
         <label class="check"><input id="includeInteractionTukey" type="checkbox" checked> Tukey por combinación factorial</label>
       </div>
 
-      <div class="row">
-        <button id="btnAnalyze" class="primary" type="button" disabled>Ejecutar y descargar Excel</button>
+      <div class="row actionRow">
+        <button id="btnAnalyze" class="primary bigButton" type="button" disabled>Ejecutar y descargar Excel</button>
         <span class="pill">GitHub Pages + Render</span>
       </div>
 
@@ -114,9 +198,14 @@
       <p class="hint">El Excel incluye la tabla original enriquecida, ANOVA factorial, medias por combinación, Tukey por factor, Tukey por interacción, interpretación y advertencias.</p>
     </section>
 
-    <section class="card">
-      <h2>3) Vista previa</h2>
-      <p class="hint">Verificá que la tabla se haya pegado correctamente.</p>
+    <section class="card stepCard">
+      <div class="sectionTitle">
+        <span class="stepBadge">3</span>
+        <div>
+          <h2>Vista previa final</h2>
+          <p class="hint">Verificá que la tabla se haya pegado correctamente.</p>
+        </div>
+      </div>
       <div class="tableWrap"><table id="preview"></table></div>
     </section>
   </div>
